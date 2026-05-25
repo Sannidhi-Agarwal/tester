@@ -18,14 +18,11 @@ import requests
 SARVAM_API_KEY = os.environ.get("SARVAM_API_KEY")
 SARVAM_REST_URL = os.environ.get("SARVAM_REST_URL", "https://api.sarvam.ai/speech-to-text")
 SARVAM_MODEL = os.environ.get("SARVAM_MODEL", "saaras:v3")
-SARVAM_DIARIZATION = os.environ.get("SARVAM_DIARIZATION", "false").lower() == "true"
 
 LANGUAGE_ALIASES = {
     "en_IN": "en-IN",
-    "en-IN": "en-IN",
     "english": "en-IN",
     "hi_IN": "hi-IN",
-    "hi-IN": "hi-IN",
     "hindi": "hi-IN",
 }
 
@@ -149,8 +146,7 @@ def transcribe_batch(audio_path: Path, language: str, mode: str) -> dict[str, An
         job = client.speech_to_text_job.create_job(
             model=SARVAM_MODEL,
             mode=resolved_mode,
-            language_code=language_code,
-            with_diarization=SARVAM_DIARIZATION,
+            language_code=language_code
         )
         job.upload_files(file_paths=[str(audio_path)])
         job.start()
