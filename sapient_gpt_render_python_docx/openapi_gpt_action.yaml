@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: Sapient Minutes GPT Backend
+  version: 1.0.0
+servers:
+  - url: https://YOUR-RENDER-APP.onrender.com
+paths:
+  /process-audio:
+    post:
+      operationId: processAudio
+      summary: Send meeting audio to Sarvam and return transcript/translation
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, name, language]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                name:
+                  type: string
+                language:
+                  type: string
+                  description: en-IN for English, hi_IN or hi-IN for Hindi
+                  default: en-IN
+                mode:
+                  type: string
+                  description: Optional; backend forces en-IN to transcribe and hi-IN to translate
+                use_batch:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Transcript response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  engine:
+                    type: string
+                  file_name:
+                    type: string
+                  language_code:
+                    type: string
+                  mode:
+                    type: string
+                  transcript:
+                    type: string
+                  raw:
+                    type: object
+  /generate-docx:
+    post:
+      operationId: generateDocx
+      summary: Generate Sapient meeting minutes DOCX from strict JSON
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [minutes]
+              properties:
+                minutes:
+                  type: object
+                  required: [client, attendees, location, date, sections]
+                  properties:
+                    client:
+                      type: string
+                    attendees:
+                      type: string
+                    location:
+                      type: string
+                    date:
+                      type: string
+                    sections:
+                      type: array
+                      items:
+                        type: object
+                    portfolio_table:
+                      type: object
+      responses:
+        '200':
+          description: Generated DOCX file
+          content:
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
