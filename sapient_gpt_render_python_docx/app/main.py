@@ -12,6 +12,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
+from fastapi import APIRouter, Query
 
 from app.sarvam_client import normalize_language, resolve_mode, transcribe_batch, transcribe_rest
 from app.scripts.generate_minutes import build_document
@@ -65,10 +66,10 @@ def health() -> dict[str, Any]:
 @app.post("/process-audio")
 async def process_audio(
     file: UploadFile = File(..., description="Meeting audio file"),
-    name: str = Form(..., description="Original/user-facing file name"),
-    language: str = Form("en-IN", description="Language code, e.g. en-IN or hi_IN"),
-    mode: str | None = Form(None, description="Requested mode. en-IN becomes transcribe; hi-IN becomes translate."),
-    use_batch: bool = Form(False, description="Use Sarvam batch path for longer audio."),
+    name: str = Query(..., description="Original/user-facing file name"),
+    language: str = Query("en-IN", description="Language code, e.g. en-IN or hi_IN"),
+    mode: str | None = Query(None, description="Requested mode. en-IN becomes transcribe; hi-IN becomes translate."),
+    use_batch: bool = Query(False, description="Use Sarvam batch path for longer audio."),
 ):
     """Upload audio and get a transcript/translation back from Sarvam.
 
